@@ -1,0 +1,251 @@
+package com.example.pc_1.firstapp;
+
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.util.Log;
+import android.view.View;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.Toast;
+
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
+public class menu_lateral extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener
+        , GoogleApiClient.OnConnectionFailedListener , OnMapReadyCallback{
+
+    //SupportMapFragment supportMapFragment;
+
+    String correo="",contraseña;
+    int a;
+    private FirebaseAuth firebaseAuth;
+    private FirebaseAuth.AuthStateListener authStateListener;
+    private GoogleApiClient googleApiClient;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        //supportMapFragment = SupportMapFragment.newInstance();
+
+        setContentView(R.layout.activity_menu_lateral);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
+        });
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction().replace(R.id.contenedor, new fragment_clases()).commit();
+
+        //supportMapFragment.getMapAsync(this);
+
+        Bundle extras = getIntent().getExtras();
+
+        if(extras!=null) {
+            a = extras.getInt("Inicio_con");
+        }
+
+        inicializar();
+    }
+
+    private void inicializar(){
+
+        firebaseAuth = FirebaseAuth.getInstance();
+        authStateListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+                if(firebaseUser!=null){
+                    Log.d("firebaseuser","usuario logueado : "+firebaseUser.getDisplayName());
+                    Log.d("firebaseuser","usuario logueado : "+firebaseUser.getEmail());
+                    correo = firebaseUser.getEmail();
+                    //Picasso.get().load(firebaseUser.getPhotoUrl()).into(iFoto);
+                }else{
+                    Log.d("firebaseuser","cesion cerrada por el usuario");
+                }
+            }
+        };
+
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+
+        googleApiClient = new GoogleApiClient.Builder(this)
+                .enableAutoManage(this,this)
+                .addApi(Auth.GOOGLE_SIGN_IN_API,gso)
+                .build();
+    }
+
+    public void cerrarsesiongoogle(){
+
+        firebaseAuth.signOut();
+        Auth.GoogleSignInApi.signOut(googleApiClient).setResultCallback(new ResultCallback<Status>() {
+            @Override
+            public void onResult(@NonNull Status status) {
+                if(status.isSuccess()){
+                    finish();  //cierro sesion, me devuelvo al login
+                    Toast.makeText(menu_lateral.this,"Cesion cerrada", Toast.LENGTH_SHORT).show();
+                }else{
+                    Toast.makeText(menu_lateral.this,"Error cerrando cesion con Google", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+    @Override
+    public void onBackPressed() {
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_lateral, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @SuppressWarnings("StatementWithEmptyBody")
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+
+        FragmentManager fm = getSupportFragmentManager();
+
+       /* if(supportMapFragment.isAdded())
+            fm.beginTransaction().hide(supportMapFragment).commit();*/
+
+        if (id == R.id.nav_camera) {
+            fm.beginTransaction().replace(R.id.contenedor,new fragment_clases()).commit();
+        } else if (id == R.id.nav_gallery) {
+            fm.beginTransaction().replace(R.id.contenedor,new fragment_Noticias()).commit();
+        } else if (id == R.id.nav_slideshow) {
+
+           /* if(supportMapFragment.isAdded()){
+                fm.beginTransaction().add(R.id.map2,supportMapFragment).commit();
+            }else
+                fm.beginTransaction().show(supportMapFragment).commit();*/
+            fm.beginTransaction().replace(R.id.contenedor,new fragment_mapa()).commit();
+        } else if (id == R.id.nav_manage) {
+
+        } else if (id == R.id.nav_share) {
+
+        } else if (id == R.id.nav_send) {
+            switch (a) {
+                case 1:
+                    firebaseAuth.signOut();
+                    finish();
+                    break;
+                case 2:
+                    cerrarsesiongoogle();
+                    finish();
+                    break;
+            }
+        }
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        firebaseAuth.addAuthStateListener(authStateListener);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        firebaseAuth.removeAuthStateListener(authStateListener);
+        googleApiClient.disconnect();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        googleApiClient.stopAutoManage(this);
+        googleApiClient.disconnect();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        googleApiClient.connect();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        googleApiClient.stopAutoManage(this);
+        googleApiClient.disconnect();
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+
+    }
+}

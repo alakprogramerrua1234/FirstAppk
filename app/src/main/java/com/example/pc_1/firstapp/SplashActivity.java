@@ -27,14 +27,14 @@ public class SplashActivity extends AppCompatActivity {
             @Override
             public void run() {
 
-                Intent i = new Intent().setClass(SplashActivity.this, IniciarSesionActivity.class);
+                Intent i = new Intent().setClass(SplashActivity.this, menu_lateral.class);
                 startActivity(i);
                 finish();
             }
         };
 
         Timer timer = new Timer();
-        timer.schedule(task, SPLASH_DELAY);
+        timer.schedule(task, 1000);
 
     }
 }

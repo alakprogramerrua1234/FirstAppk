@@ -198,7 +198,7 @@ public class IniciarSesionActivity extends AppCompatActivity implements GoogleAp
     }
 
     public void goprincipal(int a){
-        Intent ingreso = new Intent(this,Actividad_principal.class);   // si los datos estan correctos paso a Actividad_principal
+        Intent ingreso = new Intent(this,menu_lateral.class);   // si los datos estan correctos paso a Actividad_principal
         //ingreso.putExtra("usuario",scorreo);
         //ingreso.putExtra("contraseña",scontraseña);
         ingreso.putExtra("Inicio_con",a);

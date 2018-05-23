@@ -4,18 +4,24 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.squareup.picasso.Picasso;
 
-public class perfil_activity extends AppCompatActivity {
+public class perfil_activity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener{
 
     String correo, contraseña;
     TextView email,password;
@@ -23,6 +29,7 @@ public class perfil_activity extends AppCompatActivity {
     private FirebaseAuth firebaseAuth;
     private FirebaseAuth.AuthStateListener authStateListener;
     private GoogleApiClient googleApiClient;
+    private ImageView iFoto;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +38,7 @@ public class perfil_activity extends AppCompatActivity {
 
         email = findViewById(R.id.infocorreoid);
         password = findViewById(R.id.infocontraseñaid);
+        iFoto = findViewById(R.id.iFoto);
 
         Bundle extras = getIntent().getExtras();
 
@@ -38,11 +46,40 @@ public class perfil_activity extends AppCompatActivity {
             correo = extras.getString("correo");  //obtengo los datos , me sale null no se porque
             a = extras.getInt("Inicio_con");
         }
-
+        inicializar();
 
         email.setText(correo);
-        password.setText(contraseña);
     }
+
+    private void inicializar(){
+
+        firebaseAuth = FirebaseAuth.getInstance();
+        authStateListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+                if(firebaseUser!=null){
+                    Log.d("firebaseuser","usuario logueado : "+firebaseUser.getDisplayName());
+                    Log.d("firebaseuser","usuario logueado : "+firebaseUser.getEmail());
+                    correo = firebaseUser.getEmail();
+                    Picasso.get().load(firebaseUser.getPhotoUrl()).into(iFoto);
+                }else{
+                    Log.d("firebaseuser","cesion cerrada por el usuario");
+                }
+            }
+        };
+
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+
+        googleApiClient = new GoogleApiClient.Builder(this)
+                .enableAutoManage(this,this)
+                .addApi(Auth.GOOGLE_SIGN_IN_API,gso)
+                .build();
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {  //menu de overflow
@@ -92,6 +129,7 @@ public class perfil_activity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        firebaseAuth.addAuthStateListener(authStateListener);
     }
 
     @Override
@@ -119,5 +157,10 @@ public class perfil_activity extends AppCompatActivity {
         super.onDestroy();
         googleApiClient.stopAutoManage(this);
         googleApiClient.disconnect();
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
     }
 }

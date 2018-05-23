@@ -26,15 +26,12 @@ public class Actividad_principal extends AppCompatActivity implements GoogleApiC
     private FirebaseAuth firebaseAuth;
     private FirebaseAuth.AuthStateListener authStateListener;
     private GoogleApiClient googleApiClient;
-    //private ImageView iFoto;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_actividad_principal);
-
-       // iFoto = findViewById(R.id.iFoto);
 
         Bundle extras = getIntent().getExtras();
 
@@ -104,18 +101,6 @@ public class Actividad_principal extends AppCompatActivity implements GoogleApiC
                         finish();
                         break;
             }
-            /*firebaseAuth.signOut();
-            Auth.GoogleSignInApi.signOut(googleApiClient).setResultCallback(new ResultCallback<Status>() {
-                @Override
-                public void onResult(@NonNull Status status) {
-                    if(status.isSuccess()){
-                        finish();           //cierro sesion, me devuelvo al login
-                        Toast.makeText(Actividad_principal.this,"Cesion cerrada",Toast.LENGTH_SHORT).show();
-                    }else{
-                        Toast.makeText(Actividad_principal.this,"Error cerrando cesion con Google",Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });*/
         }
         return super.onOptionsItemSelected(item);
     }

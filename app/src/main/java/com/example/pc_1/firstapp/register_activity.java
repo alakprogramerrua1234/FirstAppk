@@ -19,8 +19,13 @@ import com.google.firebase.auth.FirebaseUser;
 public class register_activity extends AppCompatActivity {
 
     EditText correo,contraseña,rcontraseña;
+    String email,password,rpassword;
+    int k=0;
+    char c;
+
     private FirebaseAuth firebaseAuth;
     private FirebaseAuth.AuthStateListener authStateListener;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,51 +38,65 @@ public class register_activity extends AppCompatActivity {
 
         inicializar();
     }
-
     private void inicializar(){
-
-        firebaseAuth = FirebaseAuth.getInstance();
-        authStateListener = new FirebaseAuth.AuthStateListener() {
+        firebaseAuth=FirebaseAuth.getInstance(); //para conectar firebase
+        authStateListener=new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+                FirebaseUser firebaseUser=firebaseAuth.getCurrentUser();
                 if(firebaseUser!=null){
-                    Log.d("firebaseuser","usuario logueado : "+firebaseUser.getEmail());
+                    Log.d("FirebaseUser","Usuario logueado "+firebaseUser.getEmail());
                 }else{
-                    Log.d("firebaseuser","cesion cerrada por el usuario");
+                    Log.d("FirebaseUser","No hay usuario logueado ");
+
                 }
+
             }
         };
     }
-
     public void guardar(View view) {
 
-        if (correo.getText().toString().equals("") || contraseña.getText().toString().equals("") || rcontraseña.getText().toString().equals("")) { //verifico que no hayan campos vacios
+        email = correo.getText().toString();
+        password = contraseña.getText().toString();
+        rpassword = rcontraseña.getText().toString();
+
+        for(int i=0;i<password.length();i++){
+
+            c = password.charAt(i);
+
+            if (c==' ') {
+                k=1;
+                break;
+            }
+        }
+
+        if (email.equals("") || password.equals("") || rpassword.equals("")) { //verifico que no hayan campos vacios
             Toast.makeText(this, "Faltan Datos", Toast.LENGTH_SHORT).show();
+        }else if(k==1){
+            Toast.makeText(this, "Contraseña invalida", Toast.LENGTH_SHORT).show();
         }else {
-            if(contraseña.getText().toString().equals(rcontraseña.getText().toString())) {
-
-                firebaseAuth.createUserWithEmailAndPassword(correo.getText().toString(),contraseña.getText().toString()).addOnCompleteListener(this,
-                        new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-                                if(task.isSuccessful()){
-                                    Toast.makeText(register_activity.this,"Cuenta creada",Toast.LENGTH_SHORT).show();
-                                }else{
-                                    Toast.makeText(register_activity.this,"Error al crear cuenta",Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        });
-
+            if(password.equals(rpassword)) {
                 Intent regeresomain = new Intent();
                 regeresomain.putExtra("email", correo.getText().toString());          //esta parte es para devolverme al MainActivity y enviarle el correo y la contraseña
                 regeresomain.putExtra("password", contraseña.getText().toString());
+                firebaseAuth.createUserWithEmailAndPassword(correo.getText().toString(),contraseña.getText().toString()).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if(task.isSuccessful()){
+                            Toast.makeText(register_activity.this, "Cuenta creada",Toast.LENGTH_SHORT).show();
+
+                        }else{
+                            Toast.makeText(register_activity.this, "Error al crear",Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
                 setResult(RESULT_OK, regeresomain);
                 finish();
             }else {
                 Toast.makeText(this, "Las contraseñas no coinciden", Toast.LENGTH_SHORT).show();
             }
         }
+
 
     }
 }
