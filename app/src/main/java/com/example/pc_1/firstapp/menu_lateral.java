@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.View;
@@ -18,6 +17,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.example.pc_1.firstapp.fragments.Materias;
+import com.example.pc_1.firstapp.fragments.fragment_Noticias;
+import com.example.pc_1.firstapp.fragments.fragment_TyN;
+import com.example.pc_1.firstapp.fragments.fragment_mapa;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.ConnectionResult;
@@ -26,9 +29,10 @@ import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+
+import java.util.ArrayList;
 
 public class menu_lateral extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener
         , GoogleApiClient.OnConnectionFailedListener , OnMapReadyCallback{
@@ -40,6 +44,7 @@ public class menu_lateral extends AppCompatActivity implements NavigationView.On
     private FirebaseAuth firebaseAuth;
     private FirebaseAuth.AuthStateListener authStateListener;
     private GoogleApiClient googleApiClient;
+    ArrayList<String> itemsMaterias;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,14 +57,14 @@ public class menu_lateral extends AppCompatActivity implements NavigationView.On
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        /*FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
-        });
+        });*/
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -71,7 +76,7 @@ public class menu_lateral extends AppCompatActivity implements NavigationView.On
         navigationView.setNavigationItemSelectedListener(this);
 
         FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.contenedor, new fragment_clases()).commit();
+        fragmentManager.beginTransaction().replace(R.id.contenedor, new fragment_TyN()).commit();
 
         //supportMapFragment.getMapAsync(this);
 
@@ -82,6 +87,11 @@ public class menu_lateral extends AppCompatActivity implements NavigationView.On
         }
 
         inicializar();
+
+        itemsMaterias = new ArrayList<>();
+        itemsMaterias.add("Fisica de campos");
+        itemsMaterias.add("Teoria de la informacion");
+        itemsMaterias.add("Ingles");
     }
 
     private void inicializar(){
@@ -173,15 +183,11 @@ public class menu_lateral extends AppCompatActivity implements NavigationView.On
             fm.beginTransaction().hide(supportMapFragment).commit();*/
 
         if (id == R.id.nav_camera) {
-            fm.beginTransaction().replace(R.id.contenedor,new fragment_clases()).commit();
+            fm.beginTransaction().replace(R.id.contenedor,new Materias(itemsMaterias)).commit();
+            //fm.beginTransaction().replace(R.id.contenedor,new fragment_TyN()).commit();
         } else if (id == R.id.nav_gallery) {
             fm.beginTransaction().replace(R.id.contenedor,new fragment_Noticias()).commit();
         } else if (id == R.id.nav_slideshow) {
-
-           /* if(supportMapFragment.isAdded()){
-                fm.beginTransaction().add(R.id.map2,supportMapFragment).commit();
-            }else
-                fm.beginTransaction().show(supportMapFragment).commit();*/
             fm.beginTransaction().replace(R.id.contenedor,new fragment_mapa()).commit();
         } else if (id == R.id.nav_manage) {
 

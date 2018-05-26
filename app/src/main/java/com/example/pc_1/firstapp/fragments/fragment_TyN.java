@@ -1,4 +1,4 @@
-package com.example.pc_1.firstapp;
+package com.example.pc_1.firstapp.fragments;
 
 import android.graphics.Color;
 import android.os.Bundle;
@@ -12,9 +12,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.pc_1.firstapp.R;
 import com.example.pc_1.firstapp.adapters.ViewPagerAdapter;
 
-public class fragment_clases extends Fragment {
+public class fragment_TyN extends Fragment {
 
     private AppBarLayout appBarLayout;
     private TabLayout tabLayout;
