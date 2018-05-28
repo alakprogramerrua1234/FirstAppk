@@ -1,5 +1,6 @@
 package com.example.pc_1.firstapp.fragments;
 
+import android.annotation.SuppressLint;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
@@ -11,11 +12,17 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.example.pc_1.firstapp.R;
 import com.example.pc_1.firstapp.adapters.ViewPagerAdapter;
+import com.example.pc_1.firstapp.atributosCursos.Curso;
+
+import java.util.ArrayList;
 
 public class fragment_TyN extends Fragment {
+
+    public fragment_TyN(){}
 
     private AppBarLayout appBarLayout;
     private TabLayout tabLayout;
@@ -47,6 +54,8 @@ public class fragment_TyN extends Fragment {
 
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(viewPager));
+
+        //Toast.makeText(getActivity(),cursos.getTitulo(),Toast.LENGTH_SHORT).show();
 
 
         return view;

@@ -6,6 +6,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
+import android.view.MenuInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -15,8 +16,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.example.pc_1.firstapp.atributosCursos.Curso;
 import com.example.pc_1.firstapp.fragments.Materias;
 import com.example.pc_1.firstapp.fragments.fragment_Noticias;
 import com.example.pc_1.firstapp.fragments.fragment_TyN;
@@ -31,29 +34,30 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
 public class menu_lateral extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener
         , GoogleApiClient.OnConnectionFailedListener , OnMapReadyCallback{
 
-    //SupportMapFragment supportMapFragment;
 
     String correo="",contraseña;
     int a;
     private FirebaseAuth firebaseAuth;
     private FirebaseAuth.AuthStateListener authStateListener;
     private GoogleApiClient googleApiClient;
-    ArrayList<String> itemsMaterias;
+    private ImageView fotoPerfil;
+    ArrayList<Curso> itemsMaterias;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //supportMapFragment = SupportMapFragment.newInstance();
 
         setContentView(R.layout.activity_menu_lateral);
 
+        fotoPerfil = findViewById(R.id.imageViewPerfil);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -75,10 +79,10 @@ public class menu_lateral extends AppCompatActivity implements NavigationView.On
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.contenedor, new fragment_TyN()).commit();
+        itemsMaterias = new ArrayList<>();
 
-        //supportMapFragment.getMapAsync(this);
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction().replace(R.id.contenedor, new Materias(itemsMaterias)).commit();
 
         Bundle extras = getIntent().getExtras();
 
@@ -88,10 +92,6 @@ public class menu_lateral extends AppCompatActivity implements NavigationView.On
 
         inicializar();
 
-        itemsMaterias = new ArrayList<>();
-        itemsMaterias.add("Fisica de campos");
-        itemsMaterias.add("Teoria de la informacion");
-        itemsMaterias.add("Ingles");
     }
 
     private void inicializar(){
@@ -105,7 +105,7 @@ public class menu_lateral extends AppCompatActivity implements NavigationView.On
                     Log.d("firebaseuser","usuario logueado : "+firebaseUser.getDisplayName());
                     Log.d("firebaseuser","usuario logueado : "+firebaseUser.getEmail());
                     correo = firebaseUser.getEmail();
-                    //Picasso.get().load(firebaseUser.getPhotoUrl()).into(iFoto);
+                    Picasso.get().load(firebaseUser.getPhotoUrl()).into(fotoPerfil);
                 }else{
                     Log.d("firebaseuser","cesion cerrada por el usuario");
                 }
@@ -179,12 +179,8 @@ public class menu_lateral extends AppCompatActivity implements NavigationView.On
 
         FragmentManager fm = getSupportFragmentManager();
 
-       /* if(supportMapFragment.isAdded())
-            fm.beginTransaction().hide(supportMapFragment).commit();*/
-
         if (id == R.id.nav_camera) {
             fm.beginTransaction().replace(R.id.contenedor,new Materias(itemsMaterias)).commit();
-            //fm.beginTransaction().replace(R.id.contenedor,new fragment_TyN()).commit();
         } else if (id == R.id.nav_gallery) {
             fm.beginTransaction().replace(R.id.contenedor,new fragment_Noticias()).commit();
         } else if (id == R.id.nav_slideshow) {

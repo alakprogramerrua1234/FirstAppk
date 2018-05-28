@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/agregarNota"
+        android:title="@string/agregarnota"/>
+    <item
+        android:id="@+id/agregarTarea"
+        android:title="@string/agregarnota"/>
+    <item
+        android:id="@+id/EliminarMateria"
+        android:title="@string/agregarnota"/>
+
+</menu>

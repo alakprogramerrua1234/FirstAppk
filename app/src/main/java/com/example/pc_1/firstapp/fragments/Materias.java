@@ -5,23 +5,23 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.example.pc_1.firstapp.Dialogos.Dialogo1;
 import com.example.pc_1.firstapp.R;
+import com.example.pc_1.firstapp.adapters.AdaptadorListMaterias;
+import com.example.pc_1.firstapp.atributosCursos.Comunicador;
+import com.example.pc_1.firstapp.atributosCursos.Curso;
 
 import java.util.ArrayList;
 
@@ -34,15 +34,18 @@ public class Materias extends Fragment {
         // Required empty public constructor
     }
 
+    View view;
+    ListView listView;
+    AdaptadorListMaterias adaptadorListMaterias;
+    ArrayList<Curso> itemsMaterias;
+    int longclick;
+
     @SuppressLint("ValidFragment")
-    public Materias(ArrayList<String> arrayList) {
+    public Materias(ArrayList<Curso> arrayList) {
         itemsMaterias = arrayList;
     }
 
-    View view;
-    ListView listView;
-    ArrayList<String> itemsMaterias;
-    int longclick;
+    //list_notas.XML,list_tareas.XML
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -52,34 +55,9 @@ public class Materias extends Fragment {
 
         //listView con su adaptador
         listView = view.findViewById(R.id.ListViewid);
-        final ArrayAdapter ListViewAdapter = new ArrayAdapter<>(getActivity(),android.R.layout.simple_list_item_1,itemsMaterias);
-        listView.setAdapter(ListViewAdapter);
-
-        //eliminar materias del Listview
-        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-                final int posicion = i;
-                longclick = 1;
-
-                AlertDialog.Builder eliminarDial = new AlertDialog.Builder(getActivity());
-                eliminarDial.setTitle("Importante")
-                            .setMessage("¿ Eliminar materia ?")
-                            .setCancelable(false)
-                            .setPositiveButton("Eliminar", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialogo1, int id) {
-                                    itemsMaterias.remove(posicion);
-                                    ListViewAdapter.notifyDataSetChanged();
-                                }
-                            })
-                            .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialogo1, int id) {
-                                }
-                            });
-                eliminarDial.show();
-                return false;
-            }
-        });
+        adaptadorListMaterias = new AdaptadorListMaterias(getActivity(),itemsMaterias);
+        listView.setAdapter(adaptadorListMaterias);
+        registerForContextMenu(listView);  //menu contextual flotante
 
         //boton flotante para agregar materias
         FloatingActionButton fab = view.findViewById(R.id.fab2);
@@ -97,8 +75,8 @@ public class Materias extends Fragment {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
 
-                            itemsMaterias.add(nombreNuevaM.getText().toString());
-                            ListViewAdapter.notifyDataSetChanged();
+                            itemsMaterias.add(new Curso(nombreNuevaM.getText().toString(),numCreditos.getText().toString()+" creditos"));
+                            adaptadorListMaterias.notifyDataSetChanged();
                         }
                         })
                         .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
@@ -118,16 +96,91 @@ public class Materias extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 if(longclick!=1) {
+                    Comunicador.setObjeto(itemsMaterias.get(i));
                     fragment_TyN materias = new fragment_TyN();
                     FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
                     fragmentTransaction.replace(R.id.contenedor, materias);
                     fragmentTransaction.addToBackStack(null);
                     fragmentTransaction.commit();
-                }
+                }else longclick = 0;
             }
         });
 
         return view;
     }
 
+    //aqui se crea el menu contextual
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+
+        menu.add(0,v.getId(),0,"Agregar nota");
+        menu.add(0,v.getId(),0,"Agregar tarea");
+        menu.add(0,v.getId(),0,"Eliminar materia");
+    }
+
+    //esta funcion se llama cuando una opcion es seleccionada
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+
+        final AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+
+        if (item.getTitle()=="Agregar nota"){
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            LayoutInflater inflater = getActivity().getLayoutInflater();
+            View mView = inflater.inflate(R.layout.dialogo_agregarnotas,null);  //necesitamos este view para inflar el dialogo con su nuevo layout(XML)
+            final EditText nuevaNota = mView.findViewById(R.id.notaId);
+            final EditText nuevoPorcentaje = mView.findViewById(R.id.porcentajeId);
+            builder.setTitle("Agregar Nota:")
+                    .setCancelable(true)
+                    .setPositiveButton("Agregar", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+
+                            itemsMaterias.get(info.position).setMisnotas(Double.parseDouble(nuevaNota.getText().toString()));
+                            itemsMaterias.get(info.position).setMisporcentajes(Double.parseDouble(nuevoPorcentaje.getText().toString()));
+                        }
+                    })
+                    .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                        }
+                    });
+            builder.setView(mView);
+            AlertDialog dialog = builder.create();
+            dialog.show();
+            return true;
+        }else if(item.getTitle()=="Agregar tarea"){
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            LayoutInflater inflater = getActivity().getLayoutInflater();
+            View mView = inflater.inflate(R.layout.dialogo_materias,null);  //necesitamos este view para inflar el dialogo con su nuevo layout(XML)
+            final EditText nuevaTarea = mView.findViewById(R.id.nombre);
+            final EditText fecha = mView.findViewById(R.id.creditos);
+            builder.setTitle("Agregar Tarea:")
+                    .setCancelable(true)
+                    .setPositiveButton("Agregar", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+
+                            itemsMaterias.get(info.position).setMistareas(nuevaTarea.getText().toString());
+                            itemsMaterias.get(info.position).setFechas(fecha.getText().toString());
+                        }
+                    })
+                    .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                        }
+                    });
+            builder.setView(mView);
+            AlertDialog dialog = builder.create();
+            dialog.show();
+            return true;
+        }else if(item.getTitle()=="Eliminar materia"){
+            itemsMaterias.remove(info.position);
+            adaptadorListMaterias.notifyDataSetChanged();
+            return true;
+        }else return super.onContextItemSelected(item);
+
+    }
 }

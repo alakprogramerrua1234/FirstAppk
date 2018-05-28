@@ -6,11 +6,15 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 
 import com.example.pc_1.firstapp.Tabs.Tab_Notas;
 import com.example.pc_1.firstapp.Tabs.Tab_Tareas;
+import com.example.pc_1.firstapp.atributosCursos.Curso;
 
 public class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
+    //private Curso curso;
+
     public ViewPagerAdapter (FragmentManager fragmentManager){
         super(fragmentManager);
+        //this.curso = curso;
     }
     String[] tituloTabs = {"Tareas","Notas"};
 
