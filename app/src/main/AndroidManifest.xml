@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
         android:allowBackup="true"
@@ -13,7 +14,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".SplashActivity">
+        <activity android:name=".SplashActivity"
+                  android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -23,10 +25,10 @@
         <activity android:name=".register_activity" />
         <activity android:name=".Actividad_principal" />
         <activity android:name=".perfil_activity" />
-        <activity android:name=".IniciarSesionActivity" />
+        <activity android:name=".IniciarSesionActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
         <activity
             android:name=".menu_lateral"
-            android:label="@string/title_activity_menu_lateral"
             android:theme="@style/AppTheme.NoActionBar"></activity>
 
         <meta-data

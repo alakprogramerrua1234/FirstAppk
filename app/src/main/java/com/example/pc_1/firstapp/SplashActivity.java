@@ -1,5 +1,6 @@
 package com.example.pc_1.firstapp;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.support.v7.app.AppCompatActivity;
@@ -9,7 +10,7 @@ import android.view.Window;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class SplashActivity extends AppCompatActivity {
+public class SplashActivity extends Activity {
 
     private static final long SPLASH_DELAY = 2000;
 
@@ -19,7 +20,7 @@ public class SplashActivity extends AppCompatActivity {
 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-        this.supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
+        //this.supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
 
         setContentView(R.layout.activity_splash);
 
@@ -27,7 +28,7 @@ public class SplashActivity extends AppCompatActivity {
             @Override
             public void run() {
 
-                Intent i = new Intent().setClass(SplashActivity.this, menu_lateral.class);
+                Intent i = new Intent().setClass(SplashActivity.this, IniciarSesionActivity.class);
                 startActivity(i);
                 finish();
             }
