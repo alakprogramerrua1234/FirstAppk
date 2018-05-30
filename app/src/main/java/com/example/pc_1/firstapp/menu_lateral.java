@@ -164,8 +164,6 @@ public class menu_lateral extends AppCompatActivity implements NavigationView.On
             fm.beginTransaction().replace(R.id.contenedor,new fragment_Noticias()).commit();
         } else if (id == R.id.nav_slideshow) {
             fm.beginTransaction().replace(R.id.contenedor,new fragment_mapa()).commit();
-        } else if (id == R.id.nav_manage) {
-
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {

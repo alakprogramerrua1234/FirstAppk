@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="lugares">
+        <item>Biblioteca</item>
+        <item>Teatro Camilo Torres</item>
+        <item>Ingenieria</item>
+        <item>Coliseo</item>
+        <item>Idiomas</item>
+        <item>Museo</item>
+    </string-array>
+</resources>

@@ -38,14 +38,11 @@ public class Materias extends Fragment {
     ListView listView;
     AdaptadorListMaterias adaptadorListMaterias;
     ArrayList<Curso> itemsMaterias;
-    int longclick;
 
     @SuppressLint("ValidFragment")
     public Materias(ArrayList<Curso> arrayList) {
         itemsMaterias = arrayList;
     }
-
-    //list_notas.XML,list_tareas.XML
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -95,14 +92,12 @@ public class Materias extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                if(longclick!=1) {
                     Comunicador.setObjeto(itemsMaterias.get(i));
                     fragment_TyN materias = new fragment_TyN();
                     FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
                     fragmentTransaction.replace(R.id.contenedor, materias);
                     fragmentTransaction.addToBackStack(null);
                     fragmentTransaction.commit();
-                }else longclick = 0;
             }
         });
 

@@ -28,7 +28,7 @@ public class SplashActivity extends Activity {
             @Override
             public void run() {
 
-                Intent i = new Intent().setClass(SplashActivity.this, IniciarSesionActivity.class);
+                Intent i = new Intent().setClass(SplashActivity.this, menu_lateral.class);
                 startActivity(i);
                 finish();
             }
